@@ -1,5 +1,5 @@
 # chromium-downloader
-A simple utility that allows you to download the latest Chromium build for your platform.
+A simple utility that allows you to download the latest Chromium build for your platform.<br>
 It runs on OS X and Linux and depends on libcurl (please ensure you have it installed on your system).
 
 To compile, just type:
