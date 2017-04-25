@@ -1,20 +1,20 @@
 /*
- *	chromium-downloader version 1.1a.
+ *	chromium-downloader version 1.2
  *
- *	This is a simple utility that allows you to download 
+ *	This is a simple utility that allows you to download
  *	the latest Chromium build for your platform.
  *
- *	It runs on macOS and Linux and depends on libcurl 
+ *	It runs on macOS and Linux and depends on libcurl
  *	(please ensure you have it installed on your system).
  *
- *	This utility may be useful if you wish to update your web browser 
+ *	This utility may be useful if you wish to update your web browser
  *	to the latest nightly build. Chromium daily builds can be found at
- *	"http://commondatastorage.googleapis.com/chromium-browser-continuous"
+ *	"https://storage.googleapis.com/chromium-browser-snapshots"
  *	but may be difficult to retrieve.
  *
  *	The program works as follows:
  *
- *	- 	It checks which build is the latest one, by querying the website 
+ *	- 	It checks which build is the latest one, by querying the website
  *		commondatastorage.googleapis.com.
  *	- 	It builds the correct URL for downloading the Chromium zip file.
  *	-	It downloads the zip file and saves it to your current working directory.
@@ -26,7 +26,7 @@
 #include <math.h>
 #include <curl/curl.h>
 
-#define BASE_URL "http://commondatastorage.googleapis.com/chromium-browser-continuous"
+#define BASE_URL "https://storage.googleapis.com/chromium-browser-snapshots"
 #define ROW_LENGTH 70
 #define BUFSIZE 1024
 #ifdef __APPLE__
@@ -81,8 +81,8 @@ size_t write_f(void *ptr, size_t size, size_t nmemb, buffer_t *buf) {
 }
 
 /*
- *	The procedure performs a request to the website 
- *	"http://commondatastorage.googleapis.com/chromium-browser-continuous"
+ *	The procedure performs a request to the website
+ *	"https://storage.googleapis.com/chromium-browser-snapshots"
  *	to obtain a string containing Chromium latest version number.
  */
 char *getLatestVersion(CURLcode *reply_code) {
@@ -95,7 +95,7 @@ char *getLatestVersion(CURLcode *reply_code) {
 			curl_global_cleanup();
 			return NULL;
 		}
-		snprintf(request_url, sizeof(request_url), "%s/%s/%s", 
+		snprintf(request_url, sizeof(request_url), "%s/%s/%s",
 		(char *) BASE_URL, (char *) PLATFORM, (char *) "LAST_CHANGE");
 		curl_easy_setopt(curl, CURLOPT_URL, request_url);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_f);
@@ -112,7 +112,7 @@ char *getLatestVersion(CURLcode *reply_code) {
 }
 
 /*
- *	Callback function for libcurl that displays the current download 
+ *	Callback function for libcurl that displays the current download
  *	progress percentage.
  */
 int display_progress(void *ptr, double download_size, double downloaded,
@@ -130,7 +130,7 @@ double upload_size, double uploaded) {
 
 /*
  *	This function downloads the zip file containing Chromium latest build
- *	using libcurl. A progress meter is also displayed to keep track of 
+ *	using libcurl. A progress meter is also displayed to keep track of
  *	the download status.
  */
 int download(char *version, CURLcode *reply_code) {
@@ -143,7 +143,7 @@ int download(char *version, CURLcode *reply_code) {
 			curl_global_cleanup();
 			return 1;
 		}
-		snprintf(download_url, sizeof(download_url), "%s/%s/%s/%s", 
+		snprintf(download_url, sizeof(download_url), "%s/%s/%s/%s",
 		(char *) BASE_URL, (char *) PLATFORM, version, DEFAULT_FILENAME);
 		curl_easy_setopt(curl, CURLOPT_URL, download_url);
 		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
@@ -154,13 +154,13 @@ int download(char *version, CURLcode *reply_code) {
 		fclose(fp);
 		curl_easy_cleanup(curl);
 		curl_global_cleanup();
-		return 0;	
+		return 0;
 	}
 	return 1;
 }
 
 /*
- *	Prints a separator row made of '*' to stdout. 
+ *	Prints a separator row made of '*' to stdout.
  *	The row contains ROW_LENGTH characters.
  */
 void print_row() {
@@ -171,11 +171,11 @@ void print_row() {
 int main(int argc, char **argv) {
 	char *version = NULL;
 	CURLcode version_code, download_code;
-	fprintf(stdout, "chromium-downloader (version 1.1a)\n");
+	fprintf(stdout, "chromium-downloader (version 1.2)\n");
 	print_row();
 	if (!(version = getLatestVersion(&version_code))) {
 		fprintf(stdout, "Error: version request initialization failed.\n");
-		return EXIT_FAILURE;	
+		return EXIT_FAILURE;
 	}
 	if (version_code == CURLE_OK) {
 		fprintf(stdout, "Chromium latest version for your platform is: %s\n",
@@ -183,7 +183,7 @@ int main(int argc, char **argv) {
 		print_row();
 	}
 	else {
-		fprintf(stderr, "Could not retrieve Chromium version number: %s\n", 
+		fprintf(stderr, "Could not retrieve Chromium version number: %s\n",
 		curl_easy_strerror(version_code));
 		return EXIT_FAILURE;
 	}
@@ -196,7 +196,7 @@ int main(int argc, char **argv) {
 		version);
 	}
 	else {
-		fprintf(stderr, "Server returned an error code while downloading: %s\n", 
+		fprintf(stderr, "Server returned an error code while downloading: %s\n",
 		curl_easy_strerror(download_code));
 		return EXIT_FAILURE;
 	}
